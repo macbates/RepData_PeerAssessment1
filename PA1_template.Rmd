@@ -30,7 +30,18 @@ This results in a mean steps per day count of `r mean.steps` with a median of `r
 
 
 ## What is the average daily activity pattern?
-
+First, calculate the mean for each of the 288 individual 5-minute intervals that occur during the day for all days. That is, each day has a total of 288 5-minute intervals, so calculate the mean for each interval over the couse of all observations. Once this is done, plot a time series of the indiviudal intervals. This time any missing values will be removed and not included in the calculations.
+```{r}
+act.good <- act[complete.cases(act), ]
+int.steps <- ddply(act.good, "interval", function(df)(mean(df$steps)))
+```
+Once the indivudal intervals have been averages across all days in the study, they can be plotted as a time series showing the average activity (number of steps) per interval:
+```{r}
+plot(int.steps$interval, int.steps$V1, type = "l", main = "Mean activity per interval", ylab = "Steps", xlab = "Interval")
+max.activity <- max(int.steps$V1)
+max.interval <- int.steps$interval[int.steps$V1 == max.activity]
+```
+Looking at the above plot, there is a clear spike of `r max.activity` mean steps per day at interval `r max.interval`.
 
 ## Imputing missing values
 
