@@ -1,16 +1,35 @@
 # Reproducible Research: Peer Assessment 1
-
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day. There are several questions to be answered as a part of this assignment, and both they and the steps necessary to analyze the data are documented below.
 
 ## Loading and preprocessing the data
-
-
+The first step in the process is to load the data into a data frame for later analysis. The data file (activity.csv) is assumed to have been placed in the directory that this program is run from.
+```{r}
+#setwd("~/Documents/datasciencecoursera/Reproducible research/Project 1/RepData_PeerAssessment1")
+act <- read.csv("activity.csv", colClasses = c("integer", "Date", "integer"))
+library(plyr)
+```
 
 ## What is mean total number of steps taken per day?
+The first step to do this is to calculate the total number of steps per day, ignoring and missed (NA) values in the data set. The *plyr* package is used to summarize the number of steps, using an embedded function to perform the summary on each returned data frame (each date will be returned as a separate data frame to the function).
+```{r}
+tot.steps <- ddply(act, "date", function(df)(sum(df$steps)))
+```
+### First, create a histogram of the total number of steps per day
+The following histogram displays the distribution of total steps taken per day over the data collection period. Note that in this figure, any missing data is ignored.
+```{r}
+hist(tot.steps$V1, breaks = 10, main = "Histogram of total steps per day", xlab = "Total steps per day")
+```
 
+### Next, calculate and report the mean and median steps taken per day
+Since the total steps per day have already been calculated in the previous step, all that is required is to process the output generated from the previously run *plyr* package:
+```{r}
+median.steps  <- median(tot.steps$V1, na.rm = TRUE)
+mean.steps  <- mean(tot.steps$V1, na.rm = TRUE)
+```
+This results in a mean steps per day count of `r mean.steps` with a median of `r median.steps`.
 
 
 ## What is the average daily activity pattern?
-
 
 
 ## Imputing missing values
