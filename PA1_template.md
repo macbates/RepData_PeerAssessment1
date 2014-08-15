@@ -89,6 +89,25 @@ As may be seen by comparing the two histograms, there is a significant differenc
 median.new.steps  <- median(tot.new.steps$V1)
 mean.new.steps  <- mean(tot.new.steps$V1)
 ```
-The medians of both the original data set with missing values ignored (10395) and the data set with missing values replaced with daily interval means (10766) are quite close. This suggests that the *distribution* of the data sets is similar. The means are quite different however, with the original data set havng a mean of 9354.2295 and the "fabricated" data set having a mean of 1.0766 &times; 10<sup>4</sup>. This increase in the mean of the second data set strengthens (but does not prove) that the replacement of missing values with daily interval means has reduced the contribution of small number of steps, yielding a corresponding increase in the number of typical (median) steps. Clearly an area worthy of not only more analysis, but a more sophisticated replacement strategy for missing values.
+The medians of both the original data set with missing values ignored (10395) and the data set with missing values replaced with daily interval means (10766) are quite close. The means are quite different however, with the original data set havng a mean of 9354.2295 and the "fabricated" data set having a mean of 1.0766 &times; 10<sup>4</sup>. This increase in the mean of the second data set strengthens (but does not prove) that the replacement of missing values with daily interval means has reduced the contribution of small numbers of steps, yielding a corresponding increase in the number of typical (median) steps. Clearly an area worthy of not only more analysis, but also a more sophisticated replacement strategy for the ?weekdaysmissing values.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+To evaluate this question,the first step is to add in the weekend logical designator to the data set. Once that's done, tww separate calls are made to the *plyr* package to total up the weekend and weekend steps for each interval. Note that for the purposes of this assugnment, the data set with fabricated steps replacing the NA values is used.
+
+```r
+#new.act$date.f <- factor(weekdays(new.act$date))
+new.act$we <- weekdays(new.act$date) %in% c("Saturday", "Sunday")
+we.steps <- ddply(new.act[new.act$we == TRUE, ], "interval", function(df)(mean(df$steps)))
+wd.steps <- ddply(new.act[new.act$we == FALSE, ], "interval", function(df)(mean(df$steps)))
+```
+
+Once the weekday and weekend totals have been accumuylated, they can be individually plotted. The vertical scales are identical for both plots to allow ease of comparison.
+
+```r
+max.both <- c(0, max(wd.steps$V1, we.steps$V1))
+par(mfrow = (c(2, 1)))
+plot(wd.steps$interval, wd.steps$V1, type = "l", ylim = max.both, main = "Mean weekday activity per interval", ylab = "Steps", xlab = "Interval")
+plot(we.steps$interval, we.steps$V1, type = "l", ylim = max.both, main = "Mean weekend activity per interval", ylab = "Steps", xlab = "Interval")
+```
+
+![plot of chunk unnamed-chunk-12](./PA1_template_files/figure-html/unnamed-chunk-12.png) 
